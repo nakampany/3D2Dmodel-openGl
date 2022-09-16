@@ -1,0 +1,309 @@
+//16colbar.c
+/* １６色カラーバー　*/
+#include <stdio.h>
+#include <opengl.ft>
+void draw_bar(void){
+  int j;
+	gclearbuffer();
+	
+	for(j=0; j<16; j++){
+		color16(j);
+		gquad(32.0*j-256.0,-256.0,32.0*(j+1)-256.0,256.0);
+	}
+	glflush();
+}
+int main(){
+	ginit(1);
+	window_size(256.0);
+	reshapefunc(1);
+	glutdisplayfunc(draw_bar);
+	glutmainloop();
+	return 0;
+}
+
+
+
+
+//chaos.c
+/*  カオス :  gpoint()の例	*/
+/*  x(t+1)=1.0+a*y(t)+b*|x(t)|,  y(t+1)=x(t)　基本式 */
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <opengl.ft>
+
+static double sh=128.0;
+static double m=250;
+double bdf=0.0075;
+
+void cal_non_linear(double a,double b,double m,double x,double y);
+
+void draw_chaos(void)
+{
+    double	a,b,x,y;
+	a=-0.999;	 x=0.001;	y=0.001;
+    gclearbuffer();
+
+ 	for(b=0.0; b<=1.0; b+=bdf){
+		gclearbuffer();
+		cal_non_linear(a,b,m,x,y);
+		glutswapbuffers();
+	}	
+}	
+
+double  absolute(double x)
+{ 
+	if (x<0.0) return(-x);
+	else return(x);
+}
+
+void cal_non_linear(double a,double b,double m,double x,double y)
+{  
+	double  tx,ty;
+    int     j,k;
+ 	for(j=0;  j<=100;  j++) {
+ 		for(k=0;  k<=100;  k++){
+	 		glcolor3d(1.0,1.0,1.0);
+ 			tx=1.0+a*y+b*absolute(x);
+ 			ty=x;
+			x=tx;
+			y=ty;
+ 			gpoint(m*tx-sh,-m*ty+sh);
+ 		}
+ 	}
+ }
+
+int main()
+{
+	ginit(2);	
+	window_size(512.0);
+	reshapefunc(1);
+	glutdisplayfunc(draw_chaos);
+	glutmainloop();
+	return 0;
+} 	
+
+
+
+//Mandel.c
+/* マンデルブロー集合 */
+#include <stdio.h>
+#include <opengl.ft>
+#define		M	  50
+#define		XYSIZ 512
+#define     sf   -255.0
+void draw_mandel(void)
+{
+	int 	j,k,jmax,kmax,maxiter,count;
+	double	xmin,xmax,ymin,ymax,x,y,a,b,a2,b2,dx,dy;
+	static	int color[M+1];
+	double  col;
+	xmin=-1.0;	xmax=2.1;	ymin=-1.5;	ymax=1.6; maxiter=50;	
+	dx=xmax-xmin;	dy=ymax-ymin;
+	if(dx*XYSIZ > dy*XYSIZ){
+		jmax=XYSIZ;	kmax=(int)(XYSIZ*dy/dx);
+	}
+	else {
+		jmax=(int)(XYSIZ*dx/dy ); 
+		kmax=XYSIZ;
+	}
+	dx/=jmax;	dy/=kmax;
+	color[0]=0;	k=15;
+	for(j=maxiter; j>0; j--){
+		color[j]=k;
+		if(k>1){
+			k--;
+		}
+	}
+	for(j=0; j<=jmax; j++){
+		x=xmin + j*dx;
+		for(k=0; k<=kmax; k++){
+			y=ymax - k*dy;	a=x;	b=y;
+			a2=a*a;	b2=b*b; count=maxiter;
+			while ( a2+b2 <=4 && count){
+				b=2*a*b - y;	a=a2 - b2 - x;
+				a2=a*a;	b2=b*b;	count--;
+			}
+			col=color[count] % 16;
+			color16((int)col+1);
+			gpoint(sf+j,sf+k);
+		}
+	}
+	glflush();
+}	
+int main()
+{
+	ginit(1);
+	window_size(256.0);
+	reshapefunc(1);
+	glutdisplayfunc(draw_mandel);
+	glutmainloop();
+	return 0;
+}
+
+
+
+//Putchar.c
+/*  文字をビットマップで描画　*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <opengl.ft>
+#define lazy "the quick brown fox jumps over a lazy dog."
+#define LAZY "THE QUICK BROWN FOX JUMPS OVER A LAZY DOG."
+void put_char(void)
+{
+    int j;
+	gclearbuffer();
+	for(j=0; j<5; j++){
+		color16(j+1);
+		glrasterpos2i(-200,j*20);	
+		printstring(lazy);
+	}
+	for(j=1;j<6; j++){
+		color16(j+8);	
+		glrasterpos2i(-200,-j*20);
+		printstring(LAZY);
+	}	
+	glflush();
+}
+int main(void)
+{
+	ginit(1);
+	window_size(256);
+	enablebitmapfont();
+	reshapefunc(1);
+	glutdisplayfunc(put_char);
+	glutmainloop();
+	return 0;
+}
+
+
+
+//ritsq.c
+/* 四角の錯覚 :四角形の応用 */
+#include <stdio.h>
+#include <opengl.ft>
+#define	hxmax	400
+#define	hymax	300
+#define	haba	100
+void pict_sq(void)
+{
+    int		j,x;
+    double 	x1,x2,r,y,hy;
+	gclearbuffer();
+	for(y=0; y<hymax*2; y+=100){
+		for(j=15; j>0; j--){
+	
+	        for(x=hxmax; x<hxmax*2; x+=(haba+j)){
+				x1=x-hxmax;	
+				x2=hxmax-x;
+				hy=y-hymax;
+				color16(j);
+				r=3.0*j;
+				grectangle(x1-r,hy+r,x1+r,hy-r);
+				grectangle(x2-r,hy+r,x2+r,hy-r);
+			}
+		}
+	}
+	glflush();
+}				
+int main()
+{
+	ginit(1);
+	window_size(384.0);
+	reshapefunc(1);
+	glutdisplayfunc(pict_sq);
+	glutmainloop();
+	return 0;
+}				
+
+
+
+
+//ruby.c
+/* ルビーの輪 : an exmaple of gline */
+#include <stdio.h>
+#include <math.h>
+#include <opengl.ft>
+
+void draw_diamond(void)
+{    
+    int    k,j;
+	double dv;
+    int    nb=15;
+	double x1,y1,x2,y2;
+	double s=150.0;					
+	double rd=M_PI/180.0;
+    dv=360.0/nb; 
+	gclearbuffer();
+	for (k=0; k<=nb; k++){
+		glcolor3d(1.0,0.0,0.0);
+        x1=cos(k*dv*rd);
+        y1=sin(k*dv*rd);
+        for(j=k+1; j<=nb; j++){
+        	x2=cos(j*dv*rd);
+           	y2=sin(j*dv*rd);
+           	gline(s*x1,s*y1,s*x2,s*y2);
+        }
+     }
+	glflush();
+ }
+int main()
+{           
+ 	ginit(1);
+	window_size(256.0);
+	reshapefunc(1);
+	glutdisplayfunc(draw_diamond);
+	glutmainloop();
+	return 0;
+}	
+
+
+
+//toss.c
+/* 　ボールの放物軌道　*/
+#include <stdio.h>
+#include <math.h>
+#include <opengl.ft>
+double  vh=140.0;	
+double 	g=9.8;		
+double  zero=200.0;
+void  calc_ball(void)
+{
+	double  t,x,y,theta,v;
+	int		u,w,col=7;
+	v=vh/3.6;                	
+	glClearColor(1.0,1.0,1.0,0.0);
+	gclearbuffer();
+    glcolor3d(0.0,0.0,1.0);
+	grectangle(-255.0,255.0,255.0,-255.0);
+	glcolor3d(0.0,1.0,0.0);
+	gline(-zero,-zero/2,256.0,-zero/2);
+	for(theta=5.0; theta<85.0;  theta+=15.0){
+		color16(col);		
+		for(t=0.0; t<20.0; t+=0.05){
+			for(u=0; u<100; u++){ 
+			    x=v*cos(theta*M_PI/180.0)*t;	
+			    y=v*sin(theta*M_PI/180.0)*t-g*t*t/2.0;
+			    if(y>=0.0){	gpoint(x*2-zero,y*2-zero/2);} 
+			}
+			glflush();
+		}	
+		col++;
+	}	
+}
+int main(void)
+{
+	ginit(1);
+	reshapefunc(1);
+	glutdisplayfunc(calc_ball);
+	glutmainloop();
+	return 0;
+}
+
+
+
+
+
+

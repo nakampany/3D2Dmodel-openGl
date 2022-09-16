@@ -1,0 +1,233 @@
+// animball.c
+/*  ボールのアニメーション　*/
+#include <stdio.h>
+#include <opengl.ft>
+void modeldraw(void)
+{
+	int j=0,k=2;
+		while(1){
+			gclearbuffers();
+			j+=k;
+			glcolor3d(1.0,0.0,0.0);
+			gdisc(-50.0+j,0.0,50.0);
+			if(j>250) k=-2;
+			else if (j<-150) k=2;
+			glutswapbuffers();
+		}	
+		glflush();     
+}
+int main(){
+    ginit(2);
+	reshapefunc(1);
+	glutdisplayfunc(modeldraw);
+	glutmainloop();
+	return 0;
+}	                 
+
+
+
+//Mfan.c
+/*  たくさんの風車　*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <opengl.ft>
+static float spinval=0.0;
+static double pic_siz=4.0;
+void wind_mill(double sz)
+{
+  glcolor3d(1.0, 0.0, 0.0);
+  gtri(50.0/sz,150.0/sz,50.0/sz,50.0/sz,-50.0/sz,50.0/sz);
+  gtri(50.0/sz,50.0/sz,150.0/sz,-50.0/sz,50.0/sz,-50.0/sz);
+  gtri(50.0/sz,-50.0/sz,-50.0/sz,-150.0/sz,-50.0/sz,-50.0/sz);
+  gtri(-50.0/sz,-50.0/sz,-150.0/sz,50.0/sz,-50.0/sz,50.0/sz);
+  glcolor3d(0.5, 1.0, 0.0);
+  gquad(-50.0/sz, 50.0/sz, 50.0/sz, -50.0/sz);
+}
+void draw_mult_fan(double x, double y)
+{
+	glpushmatrix();
+	gltranslated(x,y,0.0);
+		
+			glrotated(spinval, 0.0, 0.0, 1.0);  
+			wind_mill(pic_siz);
+		
+	glpopmatrix();
+	glflush();
+}	
+void  modeldraw(void)
+{
+    double x,y;
+    gclearbuffer();
+	for(x=-200; x<200; x+=100.0){
+		for(y=-200; y<200; y+=100.0){	
+			draw_mult_fan(x+50.0,y+50.0);
+		}	
+	}	glutswapbuffers();
+}	
+void  modelspin(void)
+{
+	spinval+=6.0;
+	if(spinval > 360.0) spinval-=360.0;
+	modeldraw();
+}
+int main()
+{  
+    ginit(2);  
+	window_size(256.0);
+	reshapefunc(1);
+	glutidlefunc(modelspin);
+	glutdisplayfunc(modelspin);
+	glutmainloop();
+	return 0;
+}
+
+
+
+//Mtorus.c
+/*　たくさんのトーラス　*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <opengl.ft>
+static int spinval=0;
+static int rotval=0;
+void draw_multi_figs(void);
+
+void modeldraw(void){
+	gclearbuffer();
+	draw_multi_figs();
+	glutswapbuffers();
+}	
+void draw_multi_figs(void){	
+  int	x,y;
+	for(x=-15; x<20; x+=10)for(y=-15; y<20; y+=10){
+		glpushmatrix();
+			gltranslated(x,y,0.0);
+				glpushmatrix(); 	
+				glrotated((double)rotval, 1.0, 1.0,  0.0);
+				glutWireTorus(0.5,2.0,8,10);
+			    glpopmatrix();     	 
+		glpopmatrix();	
+	}
+	glflush();
+}
+void modelrot(void){
+	rotval=(rotval+5) % 360;
+	modeldraw();
+}	
+int main(){ 
+   ginit(2); 
+    window_size(20.0);
+	reshapefunc(1);
+	glutidlefunc(modelrot);
+	glutdisplayfunc(modeldraw);
+	glutmainloop();
+	return 0;
+}	                 
+
+
+
+//wnd_kyms.c
+/* 風車をキーを押すことによって回転させるプログラム	*/
+#include <stdio.h>
+#include <opengl.ft>
+static float spinval=0.0;
+void wind_mill();
+
+void modeldraw(void){
+	glpushmatrix();	   
+		gclearbuffer();
+		glrotated(spinval, 0.0, 0.0, 1.0);  
+		wind_mill();
+	glpopmatrix();
+	glutswapbuffers();
+	glflush();
+}
+void wind_mill(void){
+	glcolor(255,0,0);
+	gtri(50.0, 150.0, 50.0,50.0, -50.0,50.0);
+	glcolor(0,255,0);
+	gtri(50.0, 50.0, 150.0, -50.0, 50.0, -50.0);
+	glcolor(0,0,255);
+	gtri(50.0, -50.0,-50.0, -150.0, -50.0, -50.0);
+	glcolor(255,0,255);
+	gtri(-50.0, -50.0, -150.0, 50.0, -50.0, 50.0);
+	glcolor(0,255,255);
+	gquad(-50.0, 50.0, 50.0, -50.0);
+}
+void spin_left(void){
+	spinval+=6.0;
+	if(spinval > 360.0) spinval-=360.0;
+	modeldraw();
+}
+void  spin_right(void){
+	spinval-=6.0;
+	if(spinval > 360.0) spinval-=360.0;
+	modeldraw();
+}
+void key_press(unsigned char key,int x,int y){
+	if(key=='r') spin_right();
+	else if(key=='l') spin_left();
+}
+void mouse(int butt,int state,int x,int y){
+	if(butt==glut_left_button){
+		if(state==glut_down) spin_left();
+	}
+	else if(butt==glut_right_button){
+		if(state==glut_down) spin_right();
+	}
+	modeldraw();
+}
+int main(){
+    ginit(2);
+	reshapefunc(1);
+	glutkeyboardfunc(key_press);
+	glutmousefunc(mouse);
+	glutdisplayfunc(modeldraw);
+	glutmainloop();
+	return 0;
+}          
+          
+
+
+//wnd_rot.c
+/* プログラムを実行すると風車が回転する。*/
+#include <stdio.h>
+#include <opengl.ft>
+static float spinval=0.0;
+void wind_mill(){
+	glcolor3d(1.0, 0.0, 0.0);
+	gtri(50.0, 150.0, 50.0,50.0, -50.0,50.0);
+	glcolor3d(0.0,1.0,0.0);
+	gtri(50.0, 50.0, 150.0, -50.0, 50.0, -50.0);
+	glcolor3d(0.0,0.0,1.0);
+	gtri(50.0, -50.0,-50.0, -150.0, -50.0, -50.0);
+	glcolor3d(1.0,0.0,1.0);
+	gtri(-50.0, -50.0, -150.0, 50.0, -50.0, 50.0);
+	glcolor3d(0.0, 1.0, 1.0);
+	gquad(-50.0, 50.0, 50.0, -50.0);
+}
+void  modeldraw(void){
+	gclearbuffer();
+	glpushmatrix();	   
+		glrotated(spinval, 0.0, 0.0, 1.0);  
+		wind_mill();
+	glpopmatrix();
+	glutswapbuffers();
+	glflush();
+}
+void spin_left(void){
+	spinval+=2.0;
+	if(spinval > 360.0) spinval-=360.0;
+	modeldraw();
+}
+int main(){
+    ginit(2);
+    window_size(256.0);
+	reshapefunc(1);
+	glutidlefunc(spin_left);
+	glutdisplayfunc(modeldraw);
+	glutmainloop();
+	return 0;
+}        
+
+

@@ -1,0 +1,198 @@
+//line.c
+/* 画面の中心から外に向かって直線を引く。線の色は１６色とする */
+#include <stdio.h>
+#include <opengl.ft>
+int w=256,h=256,i;
+void draw_rand_line(void)
+{
+	int i;
+	gclearbuffer();
+	for(i=0;i<600;i++){
+   		      color16(random(15));
+		      gline(0,0,random(w*2)-w,random(h*2)-h);
+	}
+	glflush();
+}
+int main()
+{
+	ginit(1);
+	window_size(256.0);
+	reshapefunc(1);
+	glutdisplayfunc(draw_rand_line);
+	glutmainloop();
+	return 0;
+}
+
+
+
+//Mcircle.c
+/* いろいろな色で円を描く       */
+#include <stdio.h>
+#include <opengl.ft>
+void pict_circles(void)
+{
+  int j;
+  double r,x,y;
+  gclearbuffer();
+  for(j=0; j<200;j++){
+	  	r=(double)random(50);	
+		x=(double)random(300);
+		y=(double)random(300);
+		color16(random(16)+1);
+		gcircle(x-150.0,y-150.0,r);
+	}	
+	glflush();
+}
+int main(void)
+{
+	ginit(1);
+	window_size(256.0);
+	reshapefunc(1);
+	glutdisplayfunc(pict_circles);
+	glutmainloop();
+	return 0;
+}
+
+
+//oval.c
+/* 白い線の楕円と緑色の楕円を描く                         */
+#include <stdio.h>
+#include <opengl.ft>
+void pict_circ(void)
+{
+	gclearbuffer();
+	gellipse(-100.0,-10.0,100.0,50.0);
+	glcolor3d(0.0,1.0,0.0);
+	goval(100.0,10.0,100.0,50.0);
+	glflush();
+}
+int main(void)
+{
+	ginit(1);
+	window_size(256.0);
+	reshapefunc(1);
+	glutdisplayfunc(pict_circ);
+	glutmainloop();
+	return 0;
+}
+
+
+//pltrdo.c
+/* 基本グラフィクス描画関数を全部使ったプログラム。	 */
+#include <stdio.h>
+#include <opengl.ft>
+void draw_figures(void)
+{
+    int j;
+	gclearbuffer();
+	for(j=10; j<100; j++) {
+	    glcolor3d(0.0,10.0/(double)j,0.0);
+	    gpoint((double)j,200.0);	
+	}	
+	glcolor3d(1.0,0.0,0.0);
+	gline(50.0,150.0,-100.0,200.0);
+
+	glcolor3d(0.0,0.0,1.0);
+	gtri(100.0,100.0,100.0,-100.0,-100.0,0.0);
+	
+	glcolor3d(0.5,0.0,1.0);
+	gtriangle(-200.0,200.0,-175.0,150.0,-180.0,100.0);
+
+	glcolor3d(1.0,0.0,1.0);
+	grectangle(50.0,50.0,-50.0,-50.0);
+
+	glcolor3d(0.5,1.0,0.5);
+	gquad(200.0,200.0,160.0,160.0);
+
+	glcolor3d(0.5,0.5,1.0);
+	gcircle(100.0,100.0,20);
+	
+	glcolor3d(0.7,0.7,0.0);
+	gdisc(-100.0,-100.0,15);
+	
+	glcolor3d(0.0,0.7,0.7);
+	gellipse(200.0,0.0,20.0,30.0);	
+	
+	glcolor3d(0.8,0.5,0.3);
+	goval(-200.0,0.0,20.0,30.0);
+	
+	glflush();
+}
+int  main(void){
+	ginit(1);
+	window_size(256.0);
+	reshapefunc(1);
+	glutdisplayfunc(draw_figures);
+	glutmainloop();
+	return 0;
+}
+
+
+//Point.c
+/* 白い点を20個打つ */
+#include <stdio.h>
+#include <opengl.ft>
+void pict_point(void)
+{
+    int j;
+	gclearbuffer();
+	for(j=0; j<200; j+=10){
+		gpoint(j,0);
+	}
+	glflush();
+}
+int main(void)
+{
+	ginit(1);
+	window_size(256.0);
+	reshapefunc(1);
+	glutdisplayfunc(pict_point);
+	glutmainloop();
+	return 0;
+}
+
+
+//rect.c
+/* 白い線の四角と青で塗りつぶした四角を画く */
+#include <stdio.h>
+#include <opengl.ft>
+void pict_rectd(void){
+	gclearbuffer();
+	grectangle(0.0,0.0,200.0,150.0);
+	glcolor3d(0.0,0.0,1.0);
+	gquad(0.0,0.0,-200.0,-150.0);
+	glflush();
+}
+int main(void){
+	ginit(1);
+	window_size(256.0);
+	reshapefunc(1);
+	glutdisplayfunc(pict_rectd);
+	glutmainloop();
+	return 0;
+}
+
+
+//Triangle.c
+/* 白い線の三角形と緑色で塗りつぶした三角形を描く                 */
+#include <stdio.h>
+#include <opengl.ft>
+void pict_tris(void)
+{
+	gclearbuffer();
+	gtriangle(0.0,0.0,200.0,150.0,230.0,-50.0);
+	glcolor3d(0.0,1.0,0.0);
+	gtri(0.0,0.0,-200.0,-150.0,-230.0,50.0);
+	glflush();
+}
+int main(void)
+{
+	ginit(1);
+	window_size(256.0);
+	reshapefunc(1);
+	glutdisplayfunc(pict_tris);
+	glutmainloop();
+	return 0;
+}
+
+
